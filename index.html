@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Dashboard</title>
+    <style>
+        /* Базові стилі для красивого вигляду */
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        
+        /* Утиліта для приховування елементів */
+        .hidden { display: none !important; }
+
+        /* Стилі для форми авторизації */
+        #auth-screen { text-align: center; padding: 40px 0; }
+        .input-field { width: 80%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; }
+        .btn { padding: 12px 24px; background-color: #4CAF50; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        .btn:hover { background-color: #45a049; }
+        .btn-danger { background-color: #f44336; padding: 6px 12px; font-size: 14px; }
+        .btn-danger:hover { background-color: #d32f2f; }
+        .btn-small { background-color: #555; padding: 6px 12px; font-size: 14px; }
+
+        /* Стилі для головного екрану */
+        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px; }
+        
+        #quote-container { background: #eef2ff; border-left: 4px solid #5c6bc0; padding: 15px; margin-bottom: 20px; border-radius: 4px; font-style: italic; color: #555; }
+        
+        .task-form { display: flex; gap: 10px; margin-bottom: 20px; align-items: center; }
+        .task-form input { flex-grow: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+        
+        /* Лоадер для імітації завантаження на сервер */
+        .loader { font-size: 14px; color: #2196F3; font-weight: bold; }
+
+        /* Список завдань */
+        .task-list { list-style: none; padding: 0; margin: 0; }
+        .task-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f9f9f9; border: 1px solid #eee; margin-bottom: 10px; border-radius: 6px; transition: 0.2s; }
+        .task-item:hover { background: #f1f1f1; }
+        .task-item.completed span { text-decoration: line-through; color: #999; }
+        .task-content { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .task-content input[type="checkbox"] { transform: scale(1.5); cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div id="auth-screen">
+            <h2>Вхід у Smart Dashboard</h2>
+            <p>Будь ласка, представтеся, щоб продовжити.</p>
+            <form id="login-form">
+                <input type="text" id="username-input" class="input-field" placeholder="Ваш логін (без пробілів)" required minlength="3">
+                <br>
+                <div id="login-error" style="color: red; margin-bottom: 10px; display: none;"></div>
+                <button type="submit" class="btn">Увійти</button>
+            </form>
+        </div>
+
+        <div id="app-screen" class="hidden">
+            
+            <header>
+                <h2 id="welcome-msg">Вітаємо!</h2>
+                <button id="logout-btn" class="btn btn-small">Вийти</button>
+            </header>
+
+            <div id="quote-container">
+                <span id="quote-text">Завантажуємо мудрість дня... ⏳</span>
+            </div>
+
+            <form id="task-form" class="task-form">
+                <input type="text" id="new-task-input" placeholder="Що плануєте зробити?" required>
+                <button type="submit" class="btn">Додати</button>
+                <span id="save-loader" class="loader hidden">Збереження...</span>
+            </form>
+
+            <ul id="task-list" class="task-list">
+                </ul>
+
+        </div>
+
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
