@@ -15,6 +15,8 @@ import TaskManager from './TaskManager.js';
 
  // check empty(need to do) or corrupted data(done) in localStorage
 
+ const myManager = new TaskManager();
+
  function toggleScreen(isLoggedIn, username){
    if(isLoggedIn){
       authScreen.classList.add('hidden');
@@ -27,22 +29,7 @@ import TaskManager from './TaskManager.js';
    }
  };
 
- logForm.addEventListener('submit', (e) => {
-   e.preventDefault();
-   const username = usernameInput.value;
-   if(usernameInput.value.includes(' ')){
-      blockLogError.textContent = 'Username should not contain spaces!';
-      blockLogError.style.display = 'block';
-      return; 
-     } else {
-      blockLogError.style.display = 'none';
-      localStorage.setItem('smartDaschboardUser', JSON.stringify(username));
-      toggleScreen(true, username);
-     }
-   });
-
-
-function renderTasks(taskManager){
+ function renderTasks(taskManager){
    const tasks = taskManager.getAllTasks();
    taskList.innerHTML = ''; // Очищаємо список перед рендером
    tasks.forEach(task => {
@@ -59,6 +46,32 @@ function renderTasks(taskManager){
       taskList.insertAdjacentHTML('beforeend', htmlString);
    });
 }
+
+async function fetchQuote(){
+   try{
+      const response = await fetch('https://dummyjson.com/quotes/random');
+      if (!response.ok) throw new Error("Помилка завантаження");
+      const data = await response.json();
+      quoteText.textContent = `"${data.quote}" - ${data.author}`;
+   } catch (error){
+      console.error('Error fetching quote:', error);
+      quoteText.textContent ="now is not the best time for quotes, try again later!";
+   }
+}
+
+ logForm.addEventListener('submit', (e) => {
+   e.preventDefault();
+   const username = usernameInput.value;
+   if(usernameInput.value.includes(' ')){
+      blockLogError.textContent = 'Username should not contain spaces!';
+      blockLogError.style.display = 'block';
+      return; 
+     } else {
+      blockLogError.style.display = 'none';
+      localStorage.setItem('smartDaschboardUser', JSON.stringify(username));
+      toggleScreen(true, username);
+     }
+   });
 
 taskForm.addEventListener('submit', (e) => {
    e.preventDefault();
@@ -84,20 +97,6 @@ taskList.addEventListener('click', (e) => {
    }
 });
 
-const myManager = new TaskManager();
-
-const checkUser = localStorage.getItem('smartDaschboardUser');
-try {
-   if(checkUser) {
-       toggleScreen(true, JSON.parse(checkUser));
-   }
-} catch (error) {
-   console.error('Error parsing user data:', error);
-}
-
-// Одразу малюємо завдання (навіть якщо це порожній масив)
-renderTasks(myManager);
-
 logoutBtn.addEventListener('click', () => {
    localStorage.removeItem('smartDaschboardUser');
    myManager.deleteAllTask();
@@ -106,14 +105,24 @@ logoutBtn.addEventListener('click', () => {
    toggleScreen(false);
 });
 
-async function fetchQuote(){
+const checkUser = localStorage.getItem('smartDaschboardUser');
+
+if(checkUser){
    try{
-      const response = await fetch('https://dummyjson.com/quotes/random');
-      if (!response.ok) throw new Error("Помилка завантаження");
-      const data = await response.json();
-      quoteText.textContent = `"${data.quote}" - ${data.author}`;
+      const username = JSON.parse(checkUser);
+      if(typeof username === 'string' && username.trim() !== ''){
+         toggleScreen(true, username);
+      } else {
+         localStorage.removeItem('smartDaschboardUser');
+         toggleScreen(false);
+      }
    } catch (error){
-      console.error('Error fetching quote:', error);
-      quoteText.textContent ="now is not the best time for quotes, try again later!";
+      console.error('Error parsing user data:', error);
+      localStorage.removeItem('smartDaschboardUser');
+      toggleScreen(false);
    }
 }
+
+// Одразу малюємо завдання (навіть якщо це порожній масив)
+renderTasks(myManager);
+
